@@ -95,13 +95,19 @@ public class Scanner
                 _line++;
                 break;
             case '"':
-                // strings
+                // starts with a double quote then is must be a string
                 String();
                 break;
             default:
                 if (IsDigit(c))
                 {
+                    // if this is a digit it must be a number
                     Number();
+                }
+                else if (IsAlpha(c))
+                {
+                    // when the lexeme starts with a letter or underscore must be an identifier
+                    Identifier();
                 }
                 else
                 {
@@ -109,6 +115,23 @@ public class Scanner
                 }
                 break;
         }
+    }
+
+    /// <summary>
+    /// Check for keywords
+    /// </summary>
+    private void Identifier()
+    {
+        while (IsAlphaNumeric(Peek()))
+        {
+            string text = _source.Substring(_start, _current);
+            TokenType? type = TokenMap.Get(text);
+            if (type == null)
+                type = TokenType.IDENTIFIER;
+            AddToken((TokenType)type);
+        }
+        
+        AddToken(TokenType.IDENTIFIER);
     }
 
     /// <summary>
@@ -173,6 +196,27 @@ public class Scanner
         
         AddToken(TokenType.NUMBER, _source.Substring(_start, _current));
     }
+    
+    /// <summary>
+    /// Checks if the char is a valid Alpha character
+    /// </summary>
+    /// <param name="c">char to check</param>
+    /// <returns>true = valid alpha, false = NOT valid</returns>
+    private bool IsAlpha(char c)
+    {
+        // pattern match version from the example
+        return c is >= 'a' and <= 'z' or >= 'A' and <= 'Z' or '_';
+    }
+
+    /// <summary>
+    /// Checks if the char is a valid Alpha Numeric character
+    /// </summary>
+    /// <param name="c">char to check</param>
+    /// <returns>true = valid alpha-numeric, false = NOT valid</returns>
+    private bool IsAlphaNumeric(char c)
+    {
+        return IsAlpha(c) || IsDigit(c);
+    }
 
     /// <summary>
     /// determine if the current char is '>' or '>='
@@ -208,7 +252,7 @@ public class Scanner
     }
 
     /// <summary>
-    /// Peek ahead 2 tokens (the next next token) and return the result.
+    /// Peek ahead 2 tokens (the 'next next' token) and return the result.
     /// </summary>
     /// <returns>second char found, if at the end '\0' is returned.</returns>
     private char PeekNext()
