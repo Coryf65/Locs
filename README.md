@@ -5,8 +5,8 @@
 
 A Interpreter and Compiler, for the new created language `Locs`. 
 
-This comes from the book "Crafting Interpreters" by Robert Nystrom where they demonstrate writing `Jlox` written in `Java`.
-
+This comes from the book [Crafting Interpreters](https://craftinginterpreters.com/) by Robert Nystrom 
+where they demonstrate writing `Jlox` written in `Java`.
 
 ## Locs 
 

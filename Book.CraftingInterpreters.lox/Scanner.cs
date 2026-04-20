@@ -86,8 +86,8 @@ public class Scanner
                 }
                 break;
             // skip meaningless chars to our parser
-            case ' ': break;
-            case '\r': break;
+            case ' ':
+            case '\r':
             case '\t': break;
             case '\n' :
                 _line++;
