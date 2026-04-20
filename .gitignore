@@ -137,3 +137,8 @@ $RECYCLE.BIN/
 .DS_Store
 
 _NCrunch*
+
+# Rider stuff
+.idea/
+*.sln.iml
+
