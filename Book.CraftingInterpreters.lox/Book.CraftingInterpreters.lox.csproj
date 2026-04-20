@@ -5,7 +5,7 @@
         <TargetFramework>net9.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
-        <RootNamespace>Book.CraftingInterpreters.lox-cs</RootNamespace>
+        <RootNamespace>Book.CraftingInterpreters.lox</RootNamespace>
     </PropertyGroup>
 
 </Project>
