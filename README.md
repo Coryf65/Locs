@@ -1,7 +1,7 @@
 # Locs
 
 > [!IMPORTANT] 
-> This is for leanring and fun! Not meant for real-world applications.
+> This is for learning and fun! Not meant for real-world applications.
 
 A Interpreter and Compiler, for the new created language `Locs`. 
 
