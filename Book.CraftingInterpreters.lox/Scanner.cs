@@ -94,10 +94,38 @@ public class Scanner
             case '\n' :
                 _line++;
                 break;
+            case '"':
+                // strings
+                String();
+                break;
             default:
                 Locs.Error(_line, $"unexpected character '{c}'");
                 break;
         }
+    }
+
+    private void String()
+    {
+        while (Peek() != '"' && !IsAtEnd())
+        {
+            if (Peek() == '\n')
+                _line++;
+            Advance();
+        }
+
+        if (IsAtEnd())
+        {
+            Locs.Error(_line, "unterminated string.");
+            return;
+        }
+        
+        // the closing "
+        Advance();
+        
+        // trim the surrounding quotes
+        string value = _source.Substring(_start + 1, _current - 1);
+        AddToken(TokenType.STRING, value);
+        // if we would handle escape sequences we'd do that here too.
     }
 
     /// <summary>
