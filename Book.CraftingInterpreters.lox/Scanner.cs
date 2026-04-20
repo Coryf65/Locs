@@ -15,6 +15,7 @@ public class Scanner
     public Scanner(string source)
     {
         _source = source;
+        _tokens = new();
     }
 
     public List<Token> ScanTokens()
@@ -23,7 +24,7 @@ public class Scanner
         {
             // we are at the beginning of the next lexeme
             _start = _current;
-            ScanTokens();
+            ScanToken();
         }
         
         _tokens.Add(new Token(TokenType.EOF, "", null, _line));
@@ -130,8 +131,6 @@ public class Scanner
                 type = TokenType.IDENTIFIER;
             AddToken((TokenType)type);
         }
-        
-        AddToken(TokenType.IDENTIFIER);
     }
 
     /// <summary>
@@ -193,7 +192,7 @@ public class Scanner
         {
             Advance();
         }
-        
+        // TODO: bug here where our _current counter is not correct.
         AddToken(TokenType.NUMBER, _source.Substring(_start, _current));
     }
     

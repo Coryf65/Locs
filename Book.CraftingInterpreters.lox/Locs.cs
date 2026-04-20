@@ -52,7 +52,7 @@ public class Locs
         Run(file.ToString());
 
         if (hasError)
-            System.Environment.Exit(1);
+            Environment.Exit(1);
     }
 
     /// <summary>
@@ -64,9 +64,10 @@ public class Locs
         if (source == null)
             return;
         
-        string[] tokens = source.Split(' ');
+        Scanner scanner = new(source);
+        List<Token> tokens = scanner.ScanTokens();
         
-        foreach (string token in tokens)
+        foreach (Token token in tokens)
             Console.WriteLine(token);
     }
 
