@@ -1,5 +1,3 @@
-using System.Text.RegularExpressions;
-
 namespace Book.CraftingInterpreters.lox;
 
 public class Scanner
@@ -104,6 +102,9 @@ public class Scanner
         }
     }
 
+    /// <summary>
+    /// Checks for the opening and closing of a string
+    /// </summary>
     private void String()
     {
         while (Peek() != '"' && !IsAtEnd())
