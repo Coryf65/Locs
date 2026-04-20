@@ -77,6 +77,23 @@ public class Scanner
             case '>':
                 AddToken(Match('=') ? TokenType.GREATER_EQUAL : TokenType.EQUAL);
                 break;
+            case '/':
+                // is a bit special as our comments start with '//'
+                if (Match('/')) {
+                    // a comment goes until the end of the line
+                    while(Peek() != '\n' && !IsAtEnd())
+                            Advance();
+                } else {
+                    AddToken(TokenType.SLASH);
+                }
+                break;
+            // skip meaningless chars to our parser
+            case ' ': break;
+            case '\r': break;
+            case '\t': break;
+            case '\n' :
+                _line++;
+                break;
             default:
                 Locs.Error(_line, $"unexpected character '{c}'");
                 break;
@@ -102,6 +119,18 @@ public class Scanner
         isExpected = true;
         
         return isExpected;
+    }
+
+    /// <summary>
+    /// Peek at the next token in the source.
+    /// </summary>
+    /// <returns>next char found, if at the end '\0' is returned.</returns>
+    private char Peek()
+    {
+        if (IsAtEnd())
+            return '\0';
+        
+        return _source[_current];
     }
 
     /// <summary>
