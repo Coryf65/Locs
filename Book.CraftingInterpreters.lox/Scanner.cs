@@ -7,6 +7,8 @@ public class Scanner
     private int _start = 0;
     private int _current = 0;
     private int _line = 1;
+    private const string EOF = "EOF";
+    private const char ENDCHAR = '\0'; // It marks the end of a character sequence in memory, from C
 
     private bool IsAtEnd() => _current >= _source.Length;
     
@@ -97,7 +99,14 @@ public class Scanner
                 String();
                 break;
             default:
-                Locs.Error(_line, $"unexpected character '{c}'");
+                if (IsDigit(c))
+                {
+                    Number();
+                }
+                else
+                {
+                    Locs.Error(_line, $"unexpected character '{c}'");
+                }
                 break;
         }
     }
@@ -130,6 +139,42 @@ public class Scanner
     }
 
     /// <summary>
+    /// Checks if the char is a valid digit. using a simple digit match no fancy digits.
+    /// </summary>
+    /// <param name="c">char to look at</param>
+    /// <returns>true = is a valid digit, false = NOT a valid digit for this</returns>
+    private bool IsDigit(char c)
+    {
+        // could have used the built-in IsDigit() but anted to restrict the acceptable chars more.
+        return c is >= '0' and <= '9';
+    }
+
+    /// <summary>
+    /// When we know this is a number then we are advancing to incrementer and adding to the tokenizer
+    /// </summary>
+    private void Number()
+    {
+        while (IsDigit(Peek()))
+        {
+            Advance();
+        }
+        
+        // looking for a fractional part
+        if (Peek() == '.' && IsDigit(PeekNext()))
+        {
+            // consume the '.'
+            Advance();
+        }
+
+        while (IsDigit(Peek()))
+        {
+            Advance();
+        }
+        
+        AddToken(TokenType.NUMBER, _source.Substring(_start, _current));
+    }
+
+    /// <summary>
     /// determine if the current char is '>' or '>='
     /// </summary>
     /// <param name="expected"></param>
@@ -151,15 +196,27 @@ public class Scanner
     }
 
     /// <summary>
-    /// Peek at the next token in the source.
+    /// Peek at the next token in the source, and return the result.
     /// </summary>
     /// <returns>next char found, if at the end '\0' is returned.</returns>
     private char Peek()
     {
         if (IsAtEnd())
-            return '\0';
+            return ENDCHAR;
         
         return _source[_current];
+    }
+
+    /// <summary>
+    /// Peek ahead 2 tokens (the next next token) and return the result.
+    /// </summary>
+    /// <returns>second char found, if at the end '\0' is returned.</returns>
+    private char PeekNext()
+    {
+        if (_current + 1 >= _source.Length)
+            return ENDCHAR;
+        
+        return _source[_current + 1];
     }
 
     /// <summary>
