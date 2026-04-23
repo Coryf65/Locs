@@ -36,7 +36,6 @@ public class Scanner
         char c = Advance();
 
         Console.WriteLine($"current token      : {c}");
-        Console.WriteLine($"current char index : {_current}");
         
         switch (c)
         {
@@ -199,7 +198,8 @@ public class Scanner
             }
         }
         
-        AddToken(TokenType.NUMBER, _source.Substring(_start, _current));
+        // Note: set to 1 char
+        AddToken(TokenType.NUMBER, _source.Substring(_start, 1));
     }
     
     /// <summary>
@@ -284,7 +284,8 @@ public class Scanner
 
     private void AddToken(TokenType type, object literal)
     {
-        string text = _source.Substring(_start, _current);
+        // Note: set to 1 char
+        string text = _source.Substring(_start, 1);
         _tokens.Add(new Token(type, text, literal, _line));
     }
 }
