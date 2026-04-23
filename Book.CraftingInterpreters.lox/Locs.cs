@@ -2,7 +2,7 @@ namespace Book.CraftingInterpreters.lox;
 
 public class Locs
 {
-    static bool hasError = false;
+    private static bool _hasError = false;
     
     public static void Main(string[] args)
     {
@@ -37,7 +37,7 @@ public class Locs
             if (line == null)
                 break;
             Run(line);
-            hasError = false;
+            _hasError = false;
             
         }
     }
@@ -51,7 +51,7 @@ public class Locs
         byte[] file = File.ReadAllBytes(Path.GetFullPath(path));
         Run(file.ToString());
 
-        if (hasError)
+        if (_hasError)
             Environment.Exit(1);
     }
 
@@ -80,6 +80,6 @@ public class Locs
     {
         Console.WriteLine($"[line {line}] Error {where} " +
                           $"\nmessage {message}");
-        hasError = true;
+        _hasError = true;
     }
 }

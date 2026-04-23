@@ -34,6 +34,10 @@ public class Scanner
     private void ScanToken()
     {
         char c = Advance();
+
+        Console.WriteLine($"current token      : {c}");
+        Console.WriteLine($"current char index : {_current}");
+        
         switch (c)
         {
             case '(':
@@ -125,12 +129,14 @@ public class Scanner
     {
         while (IsAlphaNumeric(Peek()))
         {
-            string text = _source.Substring(_start, _current);
-            TokenType? type = TokenMap.Get(text);
-            if (type == null)
-                type = TokenType.IDENTIFIER;
-            AddToken((TokenType)type);
+            Advance();
         }
+        
+        string text = _source.Substring(_start, _current);
+        TokenType? type = TokenMap.Get(text);
+        if (type == null)
+            type = TokenType.IDENTIFIER;
+        AddToken((TokenType)type);
     }
 
     /// <summary>
@@ -186,13 +192,13 @@ public class Scanner
         {
             // consume the '.'
             Advance();
+            
+            while (IsDigit(Peek()))
+            {
+                Advance();
+            }
         }
-
-        while (IsDigit(Peek()))
-        {
-            Advance();
-        }
-        // TODO: bug here where our _current counter is not correct.
+        
         AddToken(TokenType.NUMBER, _source.Substring(_start, _current));
     }
     
@@ -224,18 +230,14 @@ public class Scanner
     /// <returns></returns>
     private bool Match(char expected)
     {
-        bool isExpected = false;
-
         if (IsAtEnd())
-            return isExpected;
+            return false;
 
         if (_source[_current] != expected)
-            return isExpected;
+            return false;
         
         _current++;
-        isExpected = true;
-        
-        return isExpected;
+        return true;
     }
 
     /// <summary>
