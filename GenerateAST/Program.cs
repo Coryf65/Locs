@@ -125,14 +125,18 @@ void WriteToFilePath(string name, string filename, string astText)
 {
     if (filename == string.Empty)
         filename = name;
+
+    Console.WriteLine(Environment.CurrentDirectory);
+    Console.WriteLine(filename);
     
-    string outputPath = Path.GetFullPath(Environment.CurrentDirectory, filename);
+    string outputPath = Path.Combine(Environment.CurrentDirectory, filename);
     
     if (!Directory.Exists(outputPath))
         Directory.CreateDirectory(outputPath);
 
     if (Path.HasExtension(outputPath))
     {
+        // TODO: file permission issues within `/BIN` on Linux, look into this...
         File.WriteAllText(outputPath, astText);
     }
     else
