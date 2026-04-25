@@ -2,17 +2,23 @@
 
 // a very simple class generator so I do not have to manually do this everytime.
 // meant to be run from cli as a dotnet tool, but can be run from the debugger or whatever...
-Console.WriteLine("Generate AST code templates!\nby: Cory\n");
-
-string outputDirectory = string.Empty;
+string filename = string.Empty;
 string ast = string.Empty;
-List<string> types = new();
+string name = string.Empty;
+// default as of now, until I see more about how this will be used
+List<string> types =
+[
+    "Binary   : Expr left, Token operator, Expr right",
+    "Grouping : Expr expression",
+    "Literal  : Object value",
+    "Unary    : Token operator, Expr right"
+];
 
 while (true)
 {
-    // simple arg checks
+    // simple arg checks, this would be the start or another run.
     if (args.Length == 0)
-        Console.WriteLine("usage: ./generate_ast.exe -name <nameOfClass> -o <output_directory> or -c 'outputs into console'");
+        ResetFromStart();
     
     if (args.Length <= 0 || args[0] == string.Empty)
     {
@@ -22,27 +28,27 @@ while (true)
     
     for (int i = 0; i < args.Length; i++)
     {
-        // debug fun
-        string currentArg = args[i];
-        string value = string.Empty;
+        // not the flag skip to next flag
+        if (!args[i].Contains("-"))
+            continue;
         
-        if (args.Length >=  i + 1)
-            value = args[+1];
-        
-        Console.WriteLine($"Argument={currentArg}");
-        
-        // default as of now, until I see more about how this will be used
-        types.Add("Binary   : Expr left, Token operator, Expr right");
-        types.Add("Grouping : Expr expression");
-        types.Add("Literal  : Object value");
-        types.Add("Unary    : Token operator, Expr right");
-
         if (!args.Contains("-name"))
         {
             Console.WriteLine("please add -name <className>");
             break;
         }
-
+        
+        // debug fun
+        string currentArg = args[i];
+        string value = string.Empty;
+        
+        // get the value, if exists
+        if (args.Length - 1 >=  i + 1)
+            value = args[i + 1];
+        
+        Console.WriteLine($"argument={currentArg}");
+        Console.WriteLine($"value={value}");
+        
         // check flags
         switch (currentArg)
         {
@@ -55,25 +61,25 @@ while (true)
                 Console.WriteLine("helper text for this CLI tool");
                 break;
             case "-name":
-                
+                ast = DefineASTText(value, types);
+                name = value;
+                break;
             case "-c":
                 // print to console
-                ast = DefineASTText(value, types);
                 WriteToConsole(ast);
                 break;
             case "-o":
                 // write to file, next on is the value
-                outputDirectory = value;
-                WriteToFilePath(outputDirectory, ast);
+                filename = value;
+                WriteToFilePath(name, filename, ast);
                 break;
             default:
-                Console.WriteLine("usage: ./generate_ast.exe -o <output_directory> -c 'writes to current console'");
+                Console.WriteLine("usage: ./generate_ast.exe -name <nameOfClass> -o <filename/default(nameOfClass.cs)> or -c 'outputs into console'");
                 break;
         }
-
-        // reset for another run
-        args = [];
     }
+    // reset for another run
+    args = [];
 }
 
 // creates the Abstract Syntax Tree (AST) class definition text
@@ -115,20 +121,34 @@ void WriteToConsole(string astText)
 }
 
 // outputs the AST into a file by the path we are giving it
-void WriteToFilePath(string outputPath, string astText)
+void WriteToFilePath(string name, string filename, string astText)
 {
+    if (filename == string.Empty)
+        filename = name;
+    
+    string outputPath = Path.GetFullPath(Environment.CurrentDirectory, filename);
+    
     if (!Directory.Exists(outputPath))
         Directory.CreateDirectory(outputPath);
 
-    if (!File.Exists(outputPath))
+    if (Path.HasExtension(outputPath))
     {
-        if (Path.HasExtension(outputPath))
-            File.WriteAllText(Path.GetFullPath(outputPath), astText);
-        else
-        {
-            outputPath = Path.GetFullPath(outputPath + ".cs");
-            File.WriteAllText(Path.GetFullPath(outputPath), astText);
-                        
-        }
+        File.WriteAllText(outputPath, astText);
     }
+    else
+    {
+        outputPath = outputPath + ".cs";
+        File.WriteAllText(outputPath, astText);
+                    
+    }
+}
+
+void ResetFromStart()
+{
+    string aboutText = "----------------------------\nGenerate AST code templates!\nby: Cory\n----------------------------\n";
+    string usageText = "usage: ./generate_ast.exe -name <className> -o <filename default: className.cs> or -c 'outputs into console'";
+    
+    Console.Clear();
+    Console.WriteLine(aboutText);
+    Console.WriteLine(usageText);
 }
